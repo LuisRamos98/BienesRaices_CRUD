@@ -1,0 +1,17 @@
+{
+    "name": "luisa/12-bienes-raices-php-pdo",
+    "description": "Programacion Orientada a Objetos",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Luis Ramos",
+            "email": "luisandres11061998@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "./clases"
+        }
+    }
+}

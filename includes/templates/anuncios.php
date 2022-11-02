@@ -1,7 +1,6 @@
 <?php 
 
     //conexion a la bd
-    require __DIR__ . "/../config/database.php";
     $db = conectarDB();
 
     
