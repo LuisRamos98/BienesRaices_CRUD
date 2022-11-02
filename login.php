@@ -1,7 +1,7 @@
 <?php 
 
     //CONEXION DB
-    require "includes/config/database.php";
+    require "includes/app.php";
     $db = conectarDB();
 
     //VALIDACIONES
@@ -63,8 +63,6 @@
     
     }
 
-
-    require "includes/funciones.php";
     incluirTemplate("header");
 ?>
 

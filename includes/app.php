@@ -8,6 +8,6 @@ use App\Propiedad;
 
 $propiedad = new Propiedad;
 
-echo "<pre>";
-var_dump($propiedad);
-echo "</pre>";
+// echo "<pre>";
+// var_dump($propiedad);
+// echo "</pre>";

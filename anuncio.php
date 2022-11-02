@@ -9,7 +9,8 @@
     }
 
     //LLAMAMOS A LA BD
-    require "includes/config/database.php";
+    
+    require "includes/app.php";
     $db = conectarDB();
 
     //CONSULTA
@@ -22,8 +23,6 @@
 
     //RESULTADO
     $propiedad = mysqli_fetch_assoc($resultado);
-
-    require "includes/funciones.php";
     incluirTemplate("header");
 ?>
 
