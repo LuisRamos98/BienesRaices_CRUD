@@ -2,14 +2,14 @@
 
     //INICIADO SESSION
     require "../../includes/app.php";
-
+    
+  
     use App\Propiedad;
 
     estaAutenticado();
     
 
     
-    $db = conectarDB();
 
     $consulta = "SELECT * FROM vendedores";
     $vendedores = mysqli_query($db,$consulta);
@@ -29,6 +29,10 @@
         // echo "<pre>";
         // var_dump($_POST);
         // echo "</pre>";
+
+        $propiedad = new Propiedad($_POST);
+        $propiedad->guardar();
+        debugear($propiedad);
 
         // echo "<pre>";
         // var_dump($_FILES);
@@ -167,10 +171,10 @@
             <fieldset>
                 <legend>Vendedor</legend>
 
-                <select name="vendedor">
+                <select name="vendedores_id">
                     <option value="" disabled selected>--Seleccione--</option>
                     <?php while($vendedor = mysqli_fetch_assoc($vendedores)): ?>
-                    <option <?php echo $vendedorID == $vendedor["id"] ? "selected" : ""; ?> value="<?php echo $vendedor["id"]; ?>"><?php echo $vendedor["nombre"]; ?></option>
+                    <option <?php echo $vendedorID == $vendedor["id"] ? "selected" : ""; ?> value="<?php echo $vendedor["id"]; ?>"><?php echo $vendedor["nombre"] . " " . $vendedor["apellido"]; ?></option>
                     <!-- <option value="1">Juan</option>
                     <option value="2">Karen</option> -->
                     <?php endwhile ?>
