@@ -1,15 +1,14 @@
 <?php 
 
     //INICIADO SESSION
-    require "../../includes/funciones.php";
-    $auth = estaAutenticado();
-    
-    if(!$auth) {
-        header("Location: /");
-    }
+    require "../../includes/app.php";
+
+    use App\Propiedad;
+
+    estaAutenticado();
     
 
-    require "../../includes/config/database.php";
+    
     $db = conectarDB();
 
     $consulta = "SELECT * FROM vendedores";

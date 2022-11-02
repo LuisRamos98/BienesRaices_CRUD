@@ -2,13 +2,8 @@
     
     //INICIADO SESSION
     require "../includes/funciones.php";
-    $auth = estaAutenticado();
+    estaAutenticado();
     
-    if(!$auth) {
-        header("Location: /");
-    }
-
-
     //Incluir conexion a la base de datos
     require "../includes/config/database.php";
     $db = conectarDB();
