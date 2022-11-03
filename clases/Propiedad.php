@@ -6,6 +6,7 @@ class Propiedad{
 
     protected static $db;
     protected static $columnasDB = ['id','titulo',"precio","imagen",'descripcion','habitaciones','wc','estacionamiento','creado','vendedores_id'];
+    protected static $errores = [];
 
     public $id;
     public $titulo;
@@ -42,14 +43,15 @@ class Propiedad{
         $query .= join(",",array_keys($atributos)). ") VALUES ('";
         $query .= join("','",array_values($atributos))."')";
 
-        debugear($query);
+        // debugear($query);
 
 
         // Insertar en base de datos
         $query = "INSERT INTO propiedades (titulo,precio,imagen,descripcion,habitaciones,wc,estacionamiento,creado,vendedores_id) VALUES ('$this->titulo','$this->precio','$this->imagen','$this->descripcion','$this->habitaciones','$this->wc','$this->estacionamiento','$this->creado','$this->vendedores_id')";
 
         $resultado = self::$db->query($query);
-        debugear($resultado);
+        // debugear($resultado);
+        return $resultado;
     }
 
     public static function setDB($database) {
@@ -76,5 +78,55 @@ class Propiedad{
         }
 
         return $sanitizado;
+    }
+
+    //RETORNA LOS ERRORES
+    public static function getErrores() {
+        return self::$errores;
+    }
+
+    //Subida de Imagen
+    public function setImagen($imagen){
+        if($imagen){
+            $this->imagen = $imagen;
+        }
+        
+    }
+
+    //Validacion
+    public function validar() {
+        if(!$this->titulo) {
+            self::$errores[] = "Debes ingresar un titulo";
+        }
+
+        if(!$this->precio) {
+            self::$errores[] = "Debes ingresar un precio";
+        }
+
+        if( strlen($this->descripcion) < 50) {
+            self::$errores[] = "Debes ingresar un descripcion y debe ser mayor a 50 caracteres";
+        }
+
+        if(!$this->habitaciones) {
+            self::$errores[] = "El numero de habitacion es obligatoria";
+        }
+
+        if(!$this->wc) {
+            self::$errores[] = "El numero de wc es obligatoria";
+        }
+
+        if(!$this->estacionamiento) {
+            self::$errores[] = "El numero de estacionamientos es obligatoria";
+        }
+
+        if(!$this->vendedores_id) {
+            self::$errores[] = "Ingrese un vendedor ";
+        }
+
+        if(!$this->imagen) {
+            self::$errores[] = "La imagen es obligatoria";
+        }
+
+        return self::$errores;
     }
 }

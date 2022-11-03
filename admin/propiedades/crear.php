@@ -5,16 +5,19 @@
     
   
     use App\Propiedad;
+    use Intervention\Image\ImageManagerStatic as Image;
 
     estaAutenticado();
     
 
     
-
+    //Consultar para obtener los vendedores
     $consulta = "SELECT * FROM vendedores";
     $vendedores = mysqli_query($db,$consulta);
 
-    //arreglo de mensaje de errores
+    //Arreglo de mensajes de errores
+    $errores = Propiedad::getErrores();
+
     $titulo = "";
     $precio = "";
     $descripcion = "";
@@ -22,85 +25,45 @@
     $wc = "";
     $estacionamiento = "";
     $vendedorID = "";
-    $errores = [];
 
     //Ejecutar el codigo despues de que el usuario haya enviado el formulario
     if($_SERVER["REQUEST_METHOD"] === "POST"){
         // echo "<pre>";
         // var_dump($_POST);
         // echo "</pre>";
-
+        /**CREAMOS UNA NUEVA INSTANCIA**/
         $propiedad = new Propiedad($_POST);
-        $propiedad->guardar();
-        
-        //Asignar files hacia una variable
-        $imagen = $_FILES["imagen"];
-        
 
-        if(!$titulo) {
-            $errores[] = "Debes ingresar un titulo";
+        /**SUBIDA DE ARCHIVOS**/
+        //CREAR UN NOMBRE UNICO PARA LA IMAGEN
+        $nombreImagen = md5(uniqid(rand(),true)) . ".jpg";
+
+        //SETEAMOS LA IMAGEN
+        //Realiza un resize a la imagen con intervation
+        if($_FILES["imagen"]["tmp_name"]) {
+            $image = Image::make($_FILES["imagen"]["tmp_name"])->fit(800,600);
+            $propiedad->setImagen($nombreImagen);
         }
 
-        if(!$precio) {
-            $errores[] = "Debes ingresar un precio";
-        }
-
-        if( strlen($descripcion) < 50) {
-            $errores[] = "Debes ingresar un descripcion y debe ser mayor a 50 caracteres";
-        }
-
-        if(!$habitaciones) {
-            $errores[] = "El numero de habitacion es obligatoria";
-        }
-
-        if(!$wc) {
-            $errores[] = "El numero de wc es obligatoria";
-        }
-
-        if(!$estacionamiento) {
-            $errores[] = "El numero de estacionamientos es obligatoria";
-        }
-
-        if(!$vendedorID) {
-            $errores[] = "Ingrese un vendedor ";
-        }
-
-        //MEDIDA menos a 1MB
-        $medida = 1000 * 1000;
-    
-        if(!$imagen["name"] || $imagen["error"]) {
-            $errores[] = "La imagen es obligatoria";
-        } elseif($imagen["size"]>$medida) {
-            $errores[] = "Ingrese una imagen menor a 100kb";
-        }
-
-        // echo "<pre>";
-        // var_dump($errores);
-        // echo "</pre>";
-        // exit;
-
+        //VALIDAMOS
+        $errores = $propiedad->validar();        
         //Debemos revisar si nuestro arreglo de erroes esté vacío
         if (empty($errores)) {
 
-            //CREAMOS LA CARPETA PARA ALMACENAR LAS IMAGENES
-            $carpetaImagenes = "../../imagenes/";
-
-            if (!is_dir($carpetaImagenes)) {
-                mkdir($carpetaImagenes);
+            // CREAR LA CARPETA EN DONDE VAMOS A GUARDAR LAS IMGENES            
+            if (!is_dir(CARPETA_IMAGENES)) {
+                mkdir(CARPETA_IMAGENES);
             }
-
-            //CREAR UN NOMBRE UNICO PARA LA IMAGEN
-            $nombreImagen = md5(uniqid(rand(),true)) . ".jpg";
+        
+            //Asignar files hacia una variable
+            $imagen = $_FILES["imagen"];
             
-            //SUBIR LA IMAGEN
-            move_uploaded_file($imagen["tmp_name"], $carpetaImagenes . $nombreImagen);
+            //Guarda la imagen en el servidor
+            $image->save(CARPETA_IMAGENES . $nombreImagen);
 
-            // Insertar en base de datos
-            $query = "INSERT INTO propiedades (titulo,precio,imagen,descripcion,habitaciones,wc,estacionamiento,creado,vendedores_id) VALUES ('$titulo','$precio','$nombreImagen','$descripcion','$habitaciones','$wc','$estacionamiento','$creado','$vendedorID')";
+            $resultado = $propiedad->guardar();
 
-            // echo $query;
-
-            $resultado = mysqli_query($db,$query);
+            //MENSAJE DE RESULTADO O ERROR
             if($resultado) {
                 // echo "Insertado correctamente";
                 header("Location: /admin?resultado=1");
@@ -111,7 +74,6 @@
     }
 
     incluirTemplate("header");
-
 
 ?>
 
@@ -131,29 +93,29 @@
                 <legend>Información General</legend>
 
                 <label for="titulo">Titulo</label>
-                <input type="text" id="titulo" name="titulo" placeholder="Titulo Propiedad" value="<?php echo $titulo ?>">
+                <input type="text" id="titulo" name="titulo" placeholder="Titulo Propiedad" value="<?php echo $propiedad->titulo ?>">
 
                 <label for="precio">Precio</label>
-                <input type="number" id="precio" name="precio" placeholder="Precio Propiedad" value="<?php echo $precio ?>">
+                <input type="number" id="precio" name="precio" placeholder="Precio Propiedad" value="<?php echo $propiedad->precio ?>">
 
                 <label for="imagen">Imagen</label>
                 <input type="file" id="imagen" accept="image/jpeg,image/png" name="imagen">
 
                 <label for="descripcion">Descripcion</label>
-                <textarea id="descripcion" name="descripcion"><?php echo $descripcion ?></textarea>
+                <textarea id="descripcion" name="descripcion"><?php echo $propiedad->descripcion ?></textarea>
             </fieldset>
 
             <fieldset>
                 <legend>Informacion Propiedad</legend>
 
                 <label for="habitaciones">Habitaciones</label>
-                <input type="number" id="habitaciones" name="habitaciones" placeholder="Ej: 3" min="1" max="9" value="<?php echo $habitaciones ?>">
+                <input type="number" id="habitaciones" name="habitaciones" placeholder="Ej: 3" min="1" max="9" value="<?php echo $propiedad->habitaciones ?>">
 
                 <label for="wc">Baños</label>
-                <input type="number" id="wc" name="wc" placeholder="Ej: 3" min="1" max="9" value="<?php echo $wc ?>">
+                <input type="number" id="wc" name="wc" placeholder="Ej: 3" min="1" max="9" value="<?php echo $propiedad->wc ?>">
 
                 <label for="estacionamiento">Estacionamiento</label>
-                <input type="number" id="estacionamiento" name="estacionamiento" placeholder="Ej: 3" min="1" max="9" value="<?php echo $estacionamiento ?>">
+                <input type="number" id="estacionamiento" name="estacionamiento" placeholder="Ej: 3" min="1" max="9" value="<?php echo $propiedad->estacionamiento ?>">
             </fieldset>
 
             <fieldset>
@@ -162,7 +124,7 @@
                 <select name="vendedores_id">
                     <option value="" disabled selected>--Seleccione--</option>
                     <?php while($vendedor = mysqli_fetch_assoc($vendedores)): ?>
-                    <option <?php echo $vendedorID == $vendedor["id"] ? "selected" : ""; ?> value="<?php echo $vendedor["id"]; ?>"><?php echo $vendedor["nombre"] . " " . $vendedor["apellido"]; ?></option>
+                    <option <?php echo $vendedor["id"] == $propiedad->vendedores_id ? "selected" : ""; ?> value="<?php echo $vendedor["id"]; ?>"><?php echo $vendedor["nombre"] . " " . $vendedor["apellido"]; ?></option>
                     <!-- <option value="1">Juan</option>
                     <option value="2">Karen</option> -->
                     <?php endwhile ?>
