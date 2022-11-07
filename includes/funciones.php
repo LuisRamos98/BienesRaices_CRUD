@@ -23,3 +23,9 @@ function debugear($variable){
     exit;
 
 }
+
+//FUNCION PARA SANITIZAR EL HTML
+function s($html) {
+    $s = htmlspecialchars($html);
+    return $s;
+}

@@ -30,13 +30,21 @@ class Propiedad{
         $this->wc = $args["wc"] ?? '';
         $this->estacionamiento = $args["estacionamiento"] ?? '';
         $this->creado = date("y/m/d");
-        $this->vendedores_id = $args["vendedores_id"] ?? '';
+        $this->vendedores_id = $args["vendedores_id"] ?? 1;
     }
 
-    public function guardar(){
+
+    public function guardar() {
+        if (isset($this->id)) {
+            $this->actualizar();
+        } else {
+            $this->crear();
+        }
+    }
+    public function crear(){
+
         //Sanitizar los atributos
         $atributos = $this->sanitizarAtributos();
-
 
         // Insertar en base de datos
         $query = "INSERT INTO propiedades (";
@@ -52,6 +60,23 @@ class Propiedad{
         $resultado = self::$db->query($query);
         // debugear($resultado);
         return $resultado;
+    }
+
+    public function actualizar() {
+        //Sanitizar los atributos
+        $atributos = $this->sanitizarAtributos();
+
+        $valores = [];
+        
+        foreach($atributos as $key => $value) {
+            $valores[] = "{$key}='{$value}'";
+        }
+
+        $query = "UPDATE propiedades SET ";
+        $query .= join(", ",$valores);
+        $query .= "WHERE id = '" . self::$db->escape_string($this->id ) . "' ";
+
+        debugear($query);
     }
 
     public static function setDB($database) {
@@ -87,6 +112,15 @@ class Propiedad{
 
     //Subida de Imagen
     public function setImagen($imagen){
+        //Eliminamos Archivo anterior
+        if(isset($this->id)) {
+            //Comprobar si existe el archivo
+            $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
+
+            if($existeArchivo) {
+                unlink(CARPETA_IMAGENES . $this->imagen);
+            }
+        }
         if($imagen){
             $this->imagen = $imagen;
         }
@@ -129,4 +163,61 @@ class Propiedad{
 
         return self::$errores;
     }
+
+
+    //LISTAR TODAS LAS PROPIEDADES
+    public static function all(){
+
+        $query = "SELECT * FROM propiedades";
+
+        $resultado = self::consultaSQL($query);
+        return $resultado;
+    }
+
+    public static function find($id) {
+        $query = "SELECT * FROM propiedades WHERE id=${id}";
+
+        $resultado = self::consultaSQL($query);
+
+        return array_shift($resultado);
+    }
+
+    public static function consultaSQL($query) {
+
+        $array = [];
+
+        //HACEMOS LA CONSULTA SQL
+        $resultado = self::$db->query($query);
+        
+        //Iteramos el resultado
+        while($registro = $resultado->fetch_assoc()) {
+            $array[] = self::crearObjeto($registro);
+        }
+
+        //liberamos memoria
+        $resultado->free();
+
+        // debugear($array);
+        return $array;
+    }
+
+    protected static function crearObjeto($registro) {
+        $objeto = new self;
+        
+        foreach($registro as $key => $value) {
+            $objeto->$key = $value;
+        }
+
+        return $objeto;
+    }
+
+    public function sincronizar($args = []) {
+
+        foreach ($args as $key => $value) {
+            if(property_exists($this,$key) && !is_null($value)) {
+                $this->$key = $value;
+            }            
+        }
+    }
+
 }
