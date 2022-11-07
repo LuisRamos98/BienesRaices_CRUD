@@ -75,8 +75,14 @@ class Propiedad{
         $query = "UPDATE propiedades SET ";
         $query .= join(", ",$valores);
         $query .= "WHERE id = '" . self::$db->escape_string($this->id ) . "' ";
+        $query .=  " LIMIT 1";
 
-        debugear($query);
+        $resultado = self::$db->query($query);
+
+        if($resultado) {
+            // echo "Insertado correctamente";
+            header("Location: /admin?resultado=2");
+        }
     }
 
     public static function setDB($database) {

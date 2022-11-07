@@ -45,39 +45,11 @@ require "../../includes/app.php";
         $errores = $propiedad->validar();
 
         if (empty($errores)) {
-            $resultado = $propiedad->guardar();
-            // //CREAMOS LA CARPETA PARA ALMACENAR LAS IMAGENES
-            if($propiedad->imagen){
-                if (!is_dir($carpetaImagenes)) {
-                    mkdir($carpetaImagenes);
-                }
-        
-                // //CREAR UN NOMBRE UNICO PARA LA IMAGEN
-                $imagen = $_FILES["imagen"];
-                
-                //Guarda la imagen en el servidor
-                $image->save(CARPETA_IMAGENES . $nombreImagen);
 
-                unlink(CARPETA_IMAGENES . $nombreImagen);
+            //Almacenar las imagenes en el disco
+            $image->save(CARPETA_IMAGENES . $nombreImagen);
 
-            } else {
-                $nombreImagen = $propiedad["imagen"];
-            }
-
-
-            // Insertar en base de datos
-            $query = "UPDATE propiedades SET titulo = '${titulo}', precio = ${precio}, imagen = '${nombreImagen}', descripcion = '${descripcion}', habitaciones = ${habitaciones}, wc = ${wc}, estacionamiento = ${estacionamiento}, vendedores_id = ${vendedorID} WHERE id=${id}";
-
-            // echo $query;
-            // exit;
-
-
-            $resultado = mysqli_query($db,$query);
-            if($resultado) {
-                // echo "Insertado correctamente";
-                header("Location: /admin?resultado=2");
-            }
-
+            $propiedad->guardar();
         }
 
     }
