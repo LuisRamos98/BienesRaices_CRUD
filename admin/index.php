@@ -19,14 +19,10 @@
         $id = $_POST["id"]; 
         $id = filter_var($id,FILTER_VALIDATE_INT);
 
-        $query = "SELECT * FROM propiedades WHERE id = ${id}";
-        $resultado = mysqli_query($db,$query);
-        $propiedadImagen = mysqli_fetch_assoc($resultado);
-
-        unlink("../imagenes/${propiedadImagen["imagen"]}");
-        
-        $query = "DELETE FROM propiedades WHERE id = ${id}";
-        $resultado = mysqli_query($db,$query);
+        if ($id) {
+            $propiedad = Propiedad::find($id);
+            $propiedad->eliminar();
+        }
     }
 
     incluirTemplate("header");
@@ -38,6 +34,8 @@
                 <p class="alerta exito"><?php echo 'Anuncio Creado Correctamente' ?></p>
         <?php elseif(intval($resultado)===2):?>
             <p class="alerta exito"><?php echo 'Anuncio Actualizado Correctamente' ?></p>
+        <?php elseif(intval($resultado)===3):?>
+            <p class="alerta exito"><?php echo 'Anuncio Eliminado Correctamente' ?></p>
         <?php endif;?>
         <a href="/admin/propiedades/crear.php" class="boton boton-verde">Crear</a>
 

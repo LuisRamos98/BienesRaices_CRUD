@@ -53,10 +53,7 @@ require "../../includes/app.php";
         }
 
     }
-
     incluirTemplate("header");
-
-
 ?>
 
     <main class="contenedor seccion">

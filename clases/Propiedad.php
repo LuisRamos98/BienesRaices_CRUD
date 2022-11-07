@@ -85,6 +85,21 @@ class Propiedad{
         }
     }
 
+    //Eliminar
+    public function eliminar() {
+        
+        $query = "DELETE FROM propiedades WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
+
+        $resultado = self::$db->query($query);
+
+        if($resultado){
+            //ELIMINAMOS LA IMAGEN 
+            $this->borrarImagen();
+            //Redirecionamos
+            header("Location: /admin?resultado=3");
+        }
+    }
+
     public static function setDB($database) {
         self::$db = $database;
     } 
@@ -120,17 +135,22 @@ class Propiedad{
     public function setImagen($imagen){
         //Eliminamos Archivo anterior
         if(isset($this->id)) {
-            //Comprobar si existe el archivo
-            $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
-
-            if($existeArchivo) {
-                unlink(CARPETA_IMAGENES . $this->imagen);
-            }
+            $this->borrarImagen();
         }
         if($imagen){
             $this->imagen = $imagen;
         }
         
+    }
+
+    //Elinada de Imagen
+    public function borrarImagen() {
+        //Comprobar si existe el archivo
+        $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
+
+        if($existeArchivo) {
+            unlink(CARPETA_IMAGENES . $this->imagen);
+        }
     }
 
     //Validacion
