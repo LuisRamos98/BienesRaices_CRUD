@@ -47,13 +47,6 @@
             $image->save(CARPETA_IMAGENES . $nombreImagen);
 
             $resultado = $propiedad->guardar();
-
-            //MENSAJE DE RESULTADO O ERROR
-            if($resultado) {
-                // echo "Insertado correctamente";
-                header("Location: /admin?resultado=1");
-            }
-
         }
 
     }

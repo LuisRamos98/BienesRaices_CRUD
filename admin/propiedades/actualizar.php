@@ -19,6 +19,8 @@ require "../../includes/app.php";
 
     $propiedad = Propiedad::find($id);
 
+    // debugear($propiedad);
+
     $consulta = "SELECT * FROM vendedores";
     $vendedores = mysqli_query($db,$consulta);
 

@@ -3,12 +3,16 @@
     //INICIADO SESSION
 
     use App\Propiedad;
+use App\Vendedor;
 
     require "../includes/app.php";
     estaAutenticado();
 
     //OBTENER TODAS LAS PROPIEDADES
     $propiedades = Propiedad::all();
+    $vendedores = Vendedor::all();
+
+    debugear($vendedores);
 
     $resultado = $_GET["resultado"]??null;
     // var_dump($resultado); 
