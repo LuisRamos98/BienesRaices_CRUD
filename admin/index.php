@@ -3,7 +3,7 @@
     //INICIADO SESSION
 
     use App\Propiedad;
-use App\Vendedor;
+    use App\Vendedor;
 
     require "../includes/app.php";
     estaAutenticado();
@@ -12,7 +12,7 @@ use App\Vendedor;
     $propiedades = Propiedad::all();
     $vendedores = Vendedor::all();
 
-    debugear($vendedores);
+    // debugear($vendedores);
 
     $resultado = $_GET["resultado"]??null;
     // var_dump($resultado); 

@@ -84,7 +84,7 @@ class ActiveRecord {
 
         $atributos = [];
 
-        foreach(self::$columnasDB as $columna) {
+        foreach(static::$columnasDB as $columna) {
             if($columna==="id") continue;
             $atributos[$columna] = $this->$columna;
         }
@@ -100,11 +100,6 @@ class ActiveRecord {
         }
 
         return $sanitizado;
-    }
-
-    //RETORNA LOS ERRORES
-    public static function getErrores() {
-        return self::$errores;
     }
 
     //Subida de Imagen
@@ -129,41 +124,16 @@ class ActiveRecord {
         }
     }
 
+    //RETORNA LOS ERRORES
+    public static function getErrores() {
+        return static::$errores;
+    }
+    
+
     //Validacion
     public function validar() {
-        if(!$this->titulo) {
-            self::$errores[] = "Debes ingresar un titulo";
-        }
-
-        if(!$this->precio) {
-            self::$errores[] = "Debes ingresar un precio";
-        }
-
-        if( strlen($this->descripcion) < 50) {
-            self::$errores[] = "Debes ingresar un descripcion y debe ser mayor a 50 caracteres";
-        }
-
-        if(!$this->habitaciones) {
-            self::$errores[] = "El numero de habitacion es obligatoria";
-        }
-
-        if(!$this->wc) {
-            self::$errores[] = "El numero de wc es obligatoria";
-        }
-
-        if(!$this->estacionamiento) {
-            self::$errores[] = "El numero de estacionamientos es obligatoria";
-        }
-
-        if(!$this->vendedores_id) {
-            self::$errores[] = "Ingrese un vendedor ";
-        }
-
-        if(!$this->imagen) {
-            self::$errores[] = "La imagen es obligatoria";
-        }
-
-        return self::$errores;
+        static::$errores = [];
+        return static::$errores;
     }
 
 
@@ -193,7 +163,7 @@ class ActiveRecord {
         
         //Iteramos el resultado
         while($registro = $resultado->fetch_assoc()) {
-            $array[] = self::crearObjeto($registro);
+            $array[] = static::crearObjeto($registro);
         }
 
         //liberamos memoria

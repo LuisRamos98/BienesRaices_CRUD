@@ -1,17 +1,21 @@
 <?php 
 
     //INICIADO SESSION
+    require "../../includes/app.php";
+
 
 use App\Propiedad;
+use App\Vendedor;
 use Intervention\Image\ImageManagerStatic as Image;
 
-require "../../includes/app.php";
     estaAutenticado();
+
+    //Consulta para obtener todos los vendedores
+    $vendedores = Vendedor::all();
     
     //VALIDAMOS EL URL
     $id = $_GET["id"];
     $id = filter_var($id,FILTER_VALIDATE_INT);
-    $erroes = Propiedad::getErrores();
 
     if(!$id) {
         header("Location: /admin");
@@ -19,12 +23,7 @@ require "../../includes/app.php";
 
     $propiedad = Propiedad::find($id);
 
-    // debugear($propiedad);
-
-    $consulta = "SELECT * FROM vendedores";
-    $vendedores = mysqli_query($db,$consulta);
-
-
+    $erroes = Propiedad::getErrores();
     //Ejecutar el codigo despues de que el usuario haya enviado el formulario
     if($_SERVER["REQUEST_METHOD"] === "POST"){
 
@@ -47,9 +46,11 @@ require "../../includes/app.php";
         $errores = $propiedad->validar();
 
         if (empty($errores)) {
-
-            //Almacenar las imagenes en el disco
-            $image->save(CARPETA_IMAGENES . $nombreImagen);
+                    //Realiza un resize a la imagen con intervation
+            if($_FILES["propiedad"]["tmp_name"]["imagen"]) {
+                //Almacenar las imagenes en el disco
+                $image->save(CARPETA_IMAGENES . $nombreImagen);
+            }
 
             $propiedad->guardar();
         }
