@@ -23,7 +23,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 
     $propiedad = Propiedad::find($id);
 
-    $erroes = Propiedad::getErrores();
+    $errores = Propiedad::getErrores();
     //Ejecutar el codigo despues de que el usuario haya enviado el formulario
     if($_SERVER["REQUEST_METHOD"] === "POST"){
 

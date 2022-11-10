@@ -36,7 +36,7 @@ function javascript() {
       .pipe(terser())
       .pipe(sourcemaps.write('.'))
       .pipe(rename({ suffix: '.min' }))
-      .pipe(dest('.../build/js'))
+      .pipe(dest('build/js'))
 }
 
 function imagenes() {
