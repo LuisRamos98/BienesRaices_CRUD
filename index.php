@@ -29,6 +29,7 @@
         <?php 
             $limite = 3;
             include "includes/templates/anuncios.php"
+            
         ?>
         <div class="alinear-derecha">
             <a href="anuncios.php" class="boton-verde">Ver Todas</a>
